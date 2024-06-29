@@ -5,13 +5,13 @@
  # @Date: 2024-06-29 08:00:18
 ### 
 # cd ../
-
+num_gpus=${1:-"1"}
 echo "GPU counts: ${num_gpus}"
 gpus=${2:-"8"}
 echo "GPU: ${gpus}"
 test_dataset=${3:-"bbh_eval_dataset"}
 echo "test_dataset: ${test_dataset}"
-model_name="meta-llama/Llama-2-7b-hf" # path to llama 7b
+model_name="meta-llama/Llama-2-7b-hf" # path to llama 7b TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T  meta-llama/Meta-Llama-3-8B
 eval_epoch_begin=-1
 num_workers_dataloader=16
 val_batch_size=10240

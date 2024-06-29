@@ -90,7 +90,8 @@ def train(model, train_dataloader,eval_dataloader, tokenizer, optimizer, lr_sche
     elif 'llmst' in train_config.dataset or 'llmstepst' in train_config.dataset:
         llmst_tool = LLMSTTool(train_config, local_rank)
     else:
-        raise ValueError('Unknown train_config.dataset')
+        print('answer sft')
+        # raise ValueError('Unknown train_config.dataset')
 
     for epoch in range(current_epoch, train_config.num_epochs):
         epoch_start_time = time.perf_counter()
@@ -501,9 +502,9 @@ def evaluation(model,train_config, eval_dataloader, local_rank, tokenizer, model
     # Print evaluation metrics
     if train_config.enable_fsdp:
         if local_rank==0:
-            print(f" {eval_ppl=} {eval_epoch_loss=}")
+            print(f" eval_ppl = {eval_ppl} eval_epoch_loss = {eval_epoch_loss}")
     else:
-        print(f" {eval_ppl=} {eval_epoch_loss=}")
+        print(f" eval_ppl = {eval_ppl} eval_epoch_loss = {eval_epoch_loss}")
         
     return eval_ppl, eval_epoch_loss
 

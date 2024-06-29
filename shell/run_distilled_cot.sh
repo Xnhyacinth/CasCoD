@@ -1,16 +1,24 @@
 #!/bin/bash
+num_gpus=${1:-"1"}
+echo "GPU counts: ${num_gpus}"
+gpus=${2:-"8"}
+echo "GPU: ${gpus}"
+dataset=${3:-"bbh_llmcmt_dataset"}
+echo "dataset: ${dataset}"
+model_name=${4:-"meta-llama/Llama-2-7b-hf"}
+echo "model_name: ${model_name}"
 # train setting, ranging from [bbh_llmcmt_dataset, bbh_llmmtcot_dataset, bbh_llmmtra_dataset, bbh_llmmtre_dataset, bbh_llmscott_dataset, bbh_krsl_dataset, bbh_llmst_dataset, bbh_llmstepst_dataset, bbh_dataset]
-dataset="bbh_llmcmt_dataset"
+# dataset="bbh_llmcmt_dataset"
 lr=2e-4 # base lr
 weight_decay=0.05 # for adamW
 gamma=0.95
-alpha=0.1
+alpha=0.3
  # alpha * answer loss + (1-alpha) * rloss
 forward_type='concat'
 beta=0.1 # no use
 dpo_loss_type='sigmoid'
 
-model_name="meta-llama/Llama-2-7b-hf" # path to llama 7b
+# model_name="meta-llama/Meta-Llama-3-8B" # path to llama 7b "meta-llama/Llama-2-7b-hf" # path to llama 7b TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T  meta-llama/Meta-Llama-3-8B
 use_fast_kernels=False  # Enable using SDPA from PyTroch Accelerated Transformers, make use Flash Attention and Xformer memory-efficient kernels
 last_dirname="${model_name##*/}"
 refine_it=0
@@ -20,9 +28,9 @@ mkdir -p "$output_dir"
 ckpt_continue=None
 max_words=1024 
 num_epochs=10
-batch_size_training=4 
+batch_size_training=8
 gradient_accumulation_steps=2
-num_workers_dataloader=1
+num_workers_dataloader=16
 
 use_peft=True
 peft_method="lora" # None , llama_adapter, prefix
@@ -76,8 +84,12 @@ mkdir -p "$dataset_dir"
 mkdir -p "$dataset_dir/$last_dirname"
 log_file="$dataset_dir/$last_dirname/log.txt"
 
-export CUDA_VISIBLE_DEVICES="1,2,3,4"
-torchrun --nnodes 1 --nproc_per_node 4 --master-port 29529 ./finetuning.py \
+random_port=$((RANDOM%(65535-1024+1)+1024))
+while [[ $(ss -tln | grep ":$random_port") ]]; do
+    random_port=$((RANDOM%(65535-1024+1)+1024))
+done
+export CUDA_VISIBLE_DEVICES=${gpus}
+torchrun --nnodes 1 --nproc_per_node 2 --master-port ${random_port} ./finetuning.py \
     --max_words $max_words \
     --enable_fsdp $enable_fsdp \
     --model_name "$model_name" \
