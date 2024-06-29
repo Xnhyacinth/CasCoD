@@ -5,12 +5,18 @@
  # @Date: 2024-06-29 08:00:18
 ### 
 # cd ../
+
+echo "GPU counts: ${num_gpus}"
+gpus=${2:-"8"}
+echo "GPU: ${gpus}"
+test_dataset=${3:-"bbh_eval_dataset"}
+echo "test_dataset: ${test_dataset}"
 model_name="meta-llama/Llama-2-7b-hf" # path to llama 7b
 eval_epoch_begin=-1
 num_workers_dataloader=16
 val_batch_size=10240
 train_dataset='vanilla' 
-test_dataset="bbh_eval_dataset"
+# test_dataset="bbh_eval_dataset"
 load_type='hf'
 last_dirname="${model_name##*/}"
 saved_model_dir="./output_full/$load_type/$last_dirname/$train_dataset"
@@ -35,7 +41,7 @@ enable_salesforce_content_safety=False  # Enable safety check with Salesforce sa
 max_padding_length=256  # the max padding length to be used with tokenizer padding the prompts.
 use_fast_kernels=False  # Enable using SDPA from PyTroch Accelerated Transformers, make use Flash Attention and Xformer memory-efficient kernels
 
-export CUDA_VISIBLE_DEVICES="5,6"
+export CUDA_VISIBLE_DEVICES=${gpus}
 export RANK=0
 export LOCAL_RANK=0
 export WORLD_SIZE=1
