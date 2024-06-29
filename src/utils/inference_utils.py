@@ -205,11 +205,11 @@ def record_result(original_inputs, original_outputs, task_descs, task_names, tea
     #     result_dir = os.path.join(model_dir, '../results')
     # else:
     #     result_dir = os.path.join(os.path.dirname(model_dir), '../results')
-    if os.path.isdir(inference_config.saved_model_dir):
-        result_dir = os.path.join(inference_config.saved_model_dir, '/results')
-    else:
-        result_dir = os.path.join(os.path.dirname(inference_config.saved_model_dir), '/results')
-    
+    # if os.path.isdir(inference_config.saved_model_dir):
+    #     result_dir = os.path.join(inference_config.saved_model_dir, '/results')
+    # else:
+    #     result_dir = os.path.join(os.path.dirname(inference_config.saved_model_dir), '/results')
+    result_dir = os.path.join(inference_config.saved_model_dir, '/results')
     if not os.path.exists(result_dir):
         os.mkdir(result_dir)
     ## if train dataset != test dataset
