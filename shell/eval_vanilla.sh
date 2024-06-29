@@ -13,7 +13,7 @@ train_dataset='vanilla'
 test_dataset="bbh_eval_dataset"
 load_type='hf'
 last_dirname="${model_name##*/}"
-saved_model_dir="./output/$load_type/$last_dirname/$train_dataset"
+saved_model_dir="./output_full/$load_type/$last_dirname/$train_dataset"
 prompt_file="./prompt_for_vanilla/prompt_0shotcot_for_vanilla.txt"
 mkdir -p "$saved_model_dir"
 quantization=False

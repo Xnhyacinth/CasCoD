@@ -21,6 +21,7 @@ from src.utils.memory_utils import MemoryTrace
 from src.inference.safety_utils import get_safety_checker
 from src.inference.model_utils import load_model, load_peft_model
 from src.utils.metric_utils import compute_metrics
+from src.utils.metric_utils_full import compute_metrics_full
 from vllm import LLM, SamplingParams
 
 
@@ -184,7 +185,12 @@ def eval_inference(model, inference_config, eval_dataloader, local_rank, tokeniz
 
 def record_result(original_inputs, original_outputs, task_descs, task_names, teacher_responses, model_inputs, eval_preds, model_dir, inference_config, infer_cfg_ins, rank_model, rank_tokenizer):
     model_outputs = copy.deepcopy(eval_preds)
-    macro_res, details = compute_metrics(rank_model=rank_model, rank_tokenizer=rank_tokenizer, task_descs=task_descs, task_names=task_names, teacher_responses=teacher_responses, model_inputs=model_inputs, original_inputs=original_inputs, original_outputs=original_outputs, model_outputs=model_outputs, eval_preds=eval_preds, inference_config=inference_config)
+    
+    if 'full' in inference_config.saved_model_dir:
+        macro_res, details = compute_metrics_full(rank_model=rank_model, rank_tokenizer=rank_tokenizer, task_descs=task_descs, task_names=task_names, teacher_responses=teacher_responses, model_inputs=model_inputs, original_inputs=original_inputs, original_outputs=original_outputs, model_outputs=model_outputs, eval_preds=eval_preds, inference_config=inference_config)
+    else:
+        macro_res, details = compute_metrics(rank_model=rank_model, rank_tokenizer=rank_tokenizer, task_descs=task_descs, task_names=task_names, teacher_responses=teacher_responses, model_inputs=model_inputs, original_inputs=original_inputs, original_outputs=original_outputs, model_outputs=model_outputs, eval_preds=eval_preds, inference_config=inference_config)
+
     
     micro_res = [
         {
@@ -209,7 +215,7 @@ def record_result(original_inputs, original_outputs, task_descs, task_names, tea
     #     result_dir = os.path.join(inference_config.saved_model_dir, '/results')
     # else:
     #     result_dir = os.path.join(os.path.dirname(inference_config.saved_model_dir), '/results')
-    result_dir = os.path.join(inference_config.saved_model_dir, '/results')
+    result_dir = os.path.join(inference_config.saved_model_dir, 'results')
     if not os.path.exists(result_dir):
         os.mkdir(result_dir)
     ## if train dataset != test dataset

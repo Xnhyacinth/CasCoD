@@ -6,4 +6,7 @@
 
 
 
-nohup bash shell/run_distilled_cot.sh > a.log 2>&1 &
+# nohup bash shell/run_distilled_cot.sh > a.log 2>&1 &
+
+nohup bash shell/eval_vanilla.sh > b.log 2>&1 &
+nohup bash shell/eval_vanilla.sh > c.log 2>&1 &
